@@ -1,20 +1,21 @@
+const config = require('./config')
+
 // 字典，暂时纯手工录入。你可以把自己常用的命名补充到这里，好处是创建数据库表的时候不用重复注释，也可以从数据库获取
 const dictionary = {
     // 通用
     'name': '名称',
-    'id': '编号',
-    'create_time': '创建时间',
-    'update_time': '修改时间',
-    'delete_time': '删除时间',
-    'is_delete': '是否删除',
-    'user_id': '用户 ID',
-    'number': '数量',
-    'price': '价格',
+    'id': 'ID',
+    'create': '创建',
+    'update': '修改',
+    'delete': '删除',
+    'is': '是否',
     'note': '备注',
     'desc': '介绍',
     'description': '介绍',
+    'time': '时间',
     // 用户系统
     'user': '用户',
+    'password': '密码',
     'address': '地址',
     'phone': '手机',
     'email': '邮箱',
@@ -24,6 +25,8 @@ const dictionary = {
     'fax': '传真',
     'postal_code': '邮编',
     // 电商
+    'number': '数量',
+    'price': '价格',
     'product': '产品',
     'order': '订单',
     'product': '商品',
@@ -40,11 +43,39 @@ const dictionary = {
     'department': '部门',
     'customer': '客户',
 }
-// create_time  is_delete user_id ys_buy_item parent_id 父分类 ID ys_product_category postal_code
 
 function autoComment(field) {
-    if (dictionary[field]) {
-        return dictionary[field]
+    // 去掉前缀
+    if (field.indexOf(config.database.fieldPrefix) !== -1) {
+        field = field.replace(config.database.fieldPrefix, '')
+    }
+    if (field.includes('_')) {
+        let arr = field.split('_')
+        let zh = ''
+        for (let i = 0; i < arr.length; i++) {
+            if (dictionary[arr[i]]) {
+                zh += dictionary[arr[i]]
+            } else {
+                return null
+            }
+        }
+        return zh
+    } else if (/[A-Z]/.test(field)) {
+        field = field[0].toLowerCase() + field.substring(1)
+        arr = field.replace(/([A-Z])/g,"_$1").toLowerCase().split('_')
+        let zh = ''
+        for (let i = 0; i < arr.length; i++) {
+            if (dictionary[arr[i]]) {
+                zh += dictionary[arr[i]]
+            } else {
+                return null
+            }
+        }
+        return zh
+    } else {
+        if (dictionary[field]) {
+            return dictionary[field]
+        }
     }
     return null
 }

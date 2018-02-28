@@ -1,0 +1,8 @@
+{
+    "scripts": {
+        "dist": "node src/index.js"
+    },
+    "dependencies": {
+        "officegen": "^0.4.5"
+    }
+}

@@ -12,16 +12,11 @@
 
 1. clone 本项目。
 2. 安装依赖 `npm install`
-3. 进入 `src` 目录（`cd sql-nodejs/src`）。
+3. 编辑 `src/config/index.js` 配置数据库信息。
+4. 进入 `src` 目录（`cd sql-nodejs/src`）。
+2. 执行 `npm run dist`，导出的文档和数据保存在 `dist` 文件夹。
 
 ### 使用 SQL 文件生成文档
 
-1. 使用 MySQL Workbench 等工具导出某个数据库的 sql 文件，重命名为 `db.sql`，置于 `src` 目录下。
-2. 运行 `node from-sql`。
- 
-### 通过配置数据库信息生成文档
+使用 MySQL Workbench 等工具导出某个数据库的 sql 文件，重命名为 `db.sql`，置于 `src` 目录下。
 
-1. 编辑 `config.js` 配置数据库信息。
-2. 运行 `node index`。
-
-导出的文档和数据保存在 `src/export` 文件夹。

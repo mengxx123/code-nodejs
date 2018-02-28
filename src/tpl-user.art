@@ -5,8 +5,12 @@
 <head>
     <meta charset="utf-8">
     <title>{{title}}</title>
+    <link rel="stylesheet" href="yunser-ui.css">
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
-{{content}}
+<article class="ui-article">
+    {{content}}
+</article>
 </body>
 </html>
