@@ -39,9 +39,16 @@ const dictionary = {
     'image': '图片',
     'url': '链接',
     'path': '路径',
+    'activity': '活动',
+    'detail': '详情',
+    'item': '项',
+    'create_at': '创建时间',
+    'update_at': '修改时间',
+    'delete_at': '删除时间',
     // 你的项目
     'department': '部门',
     'customer': '客户',
+
 }
 
 function autoComment(field) {

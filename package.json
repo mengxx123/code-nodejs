@@ -1,8 +1,10 @@
 {
-    "scripts": {
-        "dist": "node src/index.js"
-    },
-    "dependencies": {
-        "officegen": "^0.4.5"
-    }
+  "scripts": {
+    "dist": "node src/index.js",
+    "project": "node src/project.js"
+  },
+  "dependencies": {
+    "js-beautify": "^1.7.5",
+    "officegen": "^0.4.5"
+  }
 }

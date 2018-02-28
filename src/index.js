@@ -6,6 +6,8 @@ const config = require('./config')
 const autoComment = require('./auto-comment')
 const marked = require('marked')
 const template = require('art-template')
+const genJsCode = require('./js/js')
+const genJavaCode = require('./java')
 
 let connection
 let pool
@@ -86,6 +88,19 @@ async function importFromSql() {
     return tables
 }
 
+function exportJava(tables, dbPath) {
+    let javaPath = path.resolve(dbPath, 'java')
+    if (!fs.existsSync(javaPath)) {
+        fs.mkdirSync(javaPath)
+    }
+    // for (let table of tables) {
+    //     for (let row of table.rows) {
+    //         let
+    //         table.name = table.name.replace(config.database.tablePrefix, '')
+    //     }
+    // }
+}
+
 async function main() {
     // 导入数据
     if (config.type === 1) {
@@ -93,8 +108,13 @@ async function main() {
     } else {
         tables = await importFromSql()
     }
+
     // 处理数据，便于展示
     for (let table of tables) {
+        // remove table prefix
+        if (config.database.tablePrefix && !config.database.showTablePrefix) {
+            table.name = table.name.replace(config.database.tablePrefix, '')
+        }
         for (let row of table.rows) {
             if (!row.comment) {
                 row.comment = autoComment(row.columnName) || ''
@@ -108,6 +128,10 @@ async function main() {
             }
             row.columnNameZh = zh
             row.comment = note
+            // remove field prefix
+            if (config.database.fieldPrefix && !config.database.showFieldPrefix) {
+                row.columnName = row.columnName.replace(config.database.fieldPrefix, '')
+            }
             // enum
             if (row.dataType.indexOf('enum') !== -1) {
                 row.comment += row.dataType
@@ -128,18 +152,8 @@ async function main() {
     if (!fs.existsSync(htmlPath)) {
         fs.mkdirSync(htmlPath)
     }
-    var fileName = "coverflow-3.0.1.zip";
 
-    var sourceFile = path.join(__dirname, fileName);
-    var destPath = path.join(__dirname, "dest", fileName);
-    // function copyFile(sourceFile, destPath) {
-    //     var readStream = fs.createReadStream(sourceFile)
-    //     var writeStream = fs.createWriteStream(destPath)
-    //     readStream.pipe(writeStream);
-    // }
-
-    function copyfile(src,dir)
-    {
+    function copyfile(src,dir) {
         fs.writeFileSync(dir,fs.readFileSync(src));
     }
 
@@ -165,6 +179,10 @@ async function main() {
     fs.writeFileSync(path.resolve(dbPath, 'html/index.html'), html)
     // TODO 导出 PDF
     // TODO 导出 Word
+    // 生成 Java
+    genJsCode(tables, dbPath)
+    genJavaCode(tables, dbPath)
+    exportJava(tables, dbPath)
     console.info('导出成功')
     process.exit()
 }
