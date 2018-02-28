@@ -1,0 +1,12 @@
+{{if user}}
+    <h2>{{user.name}}</h2>
+{{/if}}
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{title}}</title>
+</head>
+<body>
+{{content}}
+</body>
+</html>

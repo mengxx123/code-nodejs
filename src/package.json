@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "marked": "^0.3.16",
+    "mysql2": "^1.5.2"
+  }
+}

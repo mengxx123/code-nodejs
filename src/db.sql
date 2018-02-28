@@ -445,6 +445,36 @@ LOCK TABLES `ys_supplier` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `ys_test`
+--
+
+DROP TABLE IF EXISTS `ys_test`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `ys_test` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `asd` datetime DEFAULT NULL,
+  `user_id` varchar(32) DEFAULT NULL,
+  `int` int(10) unsigned NOT NULL DEFAULT '1',
+  `enum_col` enum('male','female','both','unknow') DEFAULT NULL,
+  `ys_testcol1` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_test_user_idx` (`user_id`),
+  KEY `idx_asd` (`asd`),
+  CONSTRAINT `fk_test_user` FOREIGN KEY (`user_id`) REFERENCES `ys_user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ys_test`
+--
+
+LOCK TABLES `ys_test` WRITE;
+/*!40000 ALTER TABLE `ys_test` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ys_test` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `ys_user`
 --
 
@@ -477,4 +507,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-02-26 16:19:35
+-- Dump completed on 2018-02-27 14:22:07
