@@ -2,34 +2,19 @@ const officegen = require('officegen')
 const fs = require('fs')
 const path = require('path')
 
-function underlineToUCamel(word) {
-    let arr = word.split('_')
-    let ret = ''
-    for (let word of arr) {
-        ret += word.substring(0,1).toUpperCase() + word.substring(1)
-    }
-    return ret
-}
-
-function underlineToLCamel(word) {
-    let ret = underlineToUCamel(word)
-    ret = ret[0].toLowerCase() + ret.substring(1)
-    return ret
-}
-
 function genDoc(tables, dbPath) {
-    var docx = officegen({
+     docx = officegen({
         type: 'docx',
         orientation: 'portrait',
         pageMargins: {top: 1000, left: 1000, bottom: 1000, right: 1000}
         // The theme support is NOT working yet...
-    });
+    })
 
     docx.on('error', function (err) {
-        console.log(err);
-    });
+        console.log(err)
+    })
 
-    var pObj = docx.createP();
+     pObj = docx.createP()
 
     // 标题
     pObj = docx.createP({
@@ -45,7 +30,7 @@ function genDoc(tables, dbPath) {
         // back: '000088'
     })
 
-    var tableStyle = {
+     tableStyle = {
         tableColWidth: 4261,
         tableSize: 24,
         tableColor: "333333",
@@ -77,7 +62,7 @@ function genDoc(tables, dbPath) {
 
     // let sequelize
     for (let table of tables) {
-        var tableData = [
+         tableData = [
             [
                 {
                     val: '列名',
@@ -107,15 +92,13 @@ function genDoc(tables, dbPath) {
         ]
 
         for (let row of table.rows) {
-            let columnName = underlineToLCamel(row.columnName)
-            let zh = row.columnNameZh
             tableData.push([
                 {
-                    val: columnName,
+                    val: row.columnName,
                     opts: ceilOpts
                 },
                 {
-                    val: zh,
+                    val: row.columnNameZh,
                     opts: ceilOpts
                 },
                 {
@@ -143,38 +126,24 @@ function genDoc(tables, dbPath) {
             font_size: 20
         })
 
-        var pObj = docx.createTable(tableData, tableStyle);
+         pObj = docx.createTable(tableData, tableStyle)
 
-        var pObj = docx.createP();
+         pObj = docx.createP()
     }
 
     let docPath = path.resolve(dbPath, 'table.docx')
-    var out = fs.createWriteStream(docPath);
+     out = fs.createWriteStream(docPath)
 
     out.on('error', function (err) {
-        console.log(err);
-    });
-
-    console.log('什么鬼')
-
-    // out.on('close', function () {
-    //     console.log('Finish to create a DOCX file.');
-    //     done(null);
-    // });
-    // let gret = docx.generate(out);
-    // console.log(gret)
+        console.log(err)
+    })
 
     return new Promise(function(resolve, reject){
-        //做一些异步操作
         out.on('close', function () {
-            console.log('Finish to create a DOCX file.');
+            console.log('export docx finish.')
             resolve()
-        });
-        docx.generate(out);
-        // setTimeout(function(){
-        //     console.log('执行完成');
-        //     resolve('随便什么数据');
-        // }, 2000);
+        })
+        docx.generate(out)
     })
 }
 

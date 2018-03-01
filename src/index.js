@@ -8,8 +8,8 @@ const marked = require('marked')
 const template = require('art-template')
 const genJsCode = require('./js/js')
 const genJavaCode = require('./java')
-const genDoc = require('./word')
-const genExcel = require('./excel')
+const genDoc = require('./office/word')
+const genExcel = require('./office/excel')
 
 let connection
 let pool
@@ -180,7 +180,6 @@ async function main() {
     // console.log(html)
     fs.writeFileSync(path.resolve(dbPath, 'html/index.html'), html)
     // TODO 导出 PDF
-    // TODO 导出 Word
 
     // 生成 Java
     genJsCode(tables, dbPath)
