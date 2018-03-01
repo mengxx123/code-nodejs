@@ -1,5 +1,5 @@
 const path = require('path')
-const java = require('java')
+const java = require('./java')
 
 let config = {
     // 导入类型（1：连接数据库获取数据，2：从 SQL 文件导入数据）
