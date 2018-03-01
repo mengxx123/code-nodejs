@@ -4,6 +4,9 @@
     <title>{{title}}</title>
     <link rel="stylesheet" href="yunser-ui.css">
     <link rel="stylesheet" href="index.css">
+    <style>
+        /* auto */
+    </style>
 </head>
 <body>
 <article class="ui-article">

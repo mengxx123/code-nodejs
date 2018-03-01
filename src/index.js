@@ -10,6 +10,7 @@ const genJsCode = require('./js/js')
 const genJavaCode = require('./java')
 const genDoc = require('./office/word')
 const genExcel = require('./office/excel')
+const genPdf = require('./office/pdf')
 
 let connection
 let pool
@@ -187,8 +188,9 @@ async function main() {
     exportJava(tables, dbPath)
     await genDoc(tables, dbPath)
     await genExcel(tables, dbPath)
+    await genPdf(tables, dbPath)
     console.info('导出成功')
-    process.exit()
+    // process.exit() // 这里有坑，确保执行到这里时文档已经生成完成
 }
 
 main()
