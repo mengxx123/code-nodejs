@@ -29,7 +29,7 @@ function genPdf(tables, dbPath) {
         let html = fs.readFileSync(path.resolve(dbPath, 'html/index.html'), 'utf-8')
         let style = fs.readFileSync(path.resolve(dbPath, 'html/index.css'), 'utf-8')
         html = html.replace(/\/\* auto \*\//, style)
-        console.log(html)
+        // console.log(html)
 
         conversion({ html: html }, function(err, pdf) {
             var output = fs.createWriteStream(path.resolve(dbPath, 'table.pdf'))

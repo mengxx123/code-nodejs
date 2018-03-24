@@ -29,7 +29,7 @@ const dictionary = {
     'price': '价格',
     'product': '产品',
     'order': '订单',
-    'product': '商品',
+    'product': '产品',
     'discount': '折扣',
     // 其他
     'order': '订单',
@@ -45,10 +45,13 @@ const dictionary = {
     'create_at': '创建时间',
     'update_at': '修改时间',
     'delete_at': '删除时间',
+    'account': '账号',
+    'idcard_number': '身份证号码',
     // 你的项目
     'department': '部门',
     'customer': '客户',
-
+    'code': '编号',
+    'attribute': '属性',
 }
 
 function autoComment(field) {
