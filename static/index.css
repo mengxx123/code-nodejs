@@ -70,3 +70,6 @@ table .column-default {
     min-width: 30px;
     color: #ccc;
 }
+.version {
+    color: #999;
+}

@@ -2,8 +2,8 @@
 <head>
     <meta charset="utf-8">
     <title>{{title}}</title>
-    <link rel="stylesheet" href="yunser-ui.css">
-    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="html/yunser-ui.css">
+    <link rel="stylesheet" href="html/index.css">
     <style>
         /* auto */
     </style>

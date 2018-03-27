@@ -32,22 +32,35 @@ function Connect(server, then){
  */
 function Shell(server, cmd, then){
     Connect(server, function(conn){
-        conn.shell(function(err, stream){
-            if(err){
-                then(err);
-            }else{// end of if
-                var buf = "";
-                stream.on('close', function(){
-                    conn.end();
-                    then(err, buf);
-                }).on('data', function(data){
-                    buf=buf+data;
-                }).stderr.on('data', function(data) {
-                    console.log('stderr: ' + data);
-                });
-                stream.end(cmd);
-            }
+        let ret = conn.exec(cmd, (err, stream) => {
+            if (err) throw err
+            stream.on('close', function(code, signal) {
+                // console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
+                conn.end();
+            }).on('data', data => {
+                // console.log('STDOUT: ' + data);
+                then(data)
+            }).stderr.on('data', data => {
+                // console.log('STDERR: ' + data);
+                then(data)
+            });
         });
+        // conn.exec(function(err, stream){
+        //     if(err){
+        //         then(err);
+        //     }else{// end of if
+        //         var buf = "";
+        //         stream.on('close', function(){
+        //             conn.end();
+        //             then(err, buf);
+        //         }).on('data', function(data){
+        //             buf=buf+data;
+        //         }).stderr.on('data', function(data) {
+        //             console.log('stderr: ' + data);
+        //         });
+        //         stream.end(cmd);
+        //     }
+        // });
     });
 }
 

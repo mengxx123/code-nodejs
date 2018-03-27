@@ -3,8 +3,8 @@ const fs = require('fs')
 const template = require('art-template')
 const path = require('path')
 
-function exportHtml(tables, dbPath) {
-    let markdown = '<h1>数据库文档</h1>\n'
+function exportHtml(tables, dbPath, config) {
+    let markdown = `<h1>数据库文档<small class="version">${config.database.version}</small></h1>\n`
     // 生成目录
     markdown += `<h2>目录</h2>
     <ul>`
@@ -44,7 +44,7 @@ function exportHtml(tables, dbPath) {
         escape: false
     })
     // console.log(html)
-    fs.writeFileSync(path.resolve(dbPath, 'html/index.html'), html)
+    fs.writeFileSync(path.resolve(dbPath, 'index.html'), html)
 }
 
 module.exports = exportHtml

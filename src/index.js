@@ -11,8 +11,9 @@ const genExcel = require('./office/excel')
 const genPdf = require('./office/pdf')
 const exportHtml = require('./html')
 const mkdirs = require('./util/file')
-const {Connect, UploadDir} = require('./util/upload')
+const {Connect, UploadDir, UploadFile, Shell} = require('./util/upload')
 const archiver = require('archiver')
+const createServer = require('./server')
 
 let connection
 let pool
@@ -164,17 +165,17 @@ async function main() {
     // 导出
     console.info('导出文档...')
     exportMarkdown(tables, dbPath)
-    exportHtml(tables, dbPath)
-    genJsCode(tables, dbPath)
-    genJavaCode(tables, dbPath)
-    exportJava(tables, dbPath)
-    await genDoc(tables, dbPath)
-    await genExcel(tables, dbPath)
-    await genPdf(tables, dbPath)
+    exportHtml(tables, dbPath, config)
+    config.exportJavascript && genJsCode(tables, dbPath)
+    config.exportJava && genJavaCode(tables, dbPath)
+    config.exportJava && exportJava(tables, dbPath)
+    config.exportDoc && await genDoc(tables, dbPath)
+    config.exportExcel && await genExcel(tables, dbPath)
+    config.exportPdf && await genPdf(tables, dbPath)
     console.info('导出成功')
     if (config.upload) {
         console.log('压缩文档...')
-        let zipFile = path.resolve(dbPath, '../example.zip')
+        let zipFile = path.resolve(dbPath, '../' + config.database.version + '.zip')
         console.log(zipFile)
         var output = fs.createWriteStream(zipFile)
         var archive = archiver('zip', {
@@ -188,24 +189,39 @@ async function main() {
             console.log('Data has been drained');
         });
         archive.pipe(output);
-        archive.directory(dbPath, 'test');
+        archive.directory(dbPath, config.database.version);
         archive.finalize();
         console.log('文档压缩完成...')
-        return
+        // return
         console.log('链接服务器...')
         Connect(config.server, function () {
             console.log('链接服务器成功')
             console.log('准备上传...')
             let start = new Date().getTime()
-            UploadDir(config.server, dbPath, config.uploadPath, function () {
+            let remotePath = config.uploadPath + '/' + config.database.version + '.zip'
+            console.log(remotePath)
+            UploadFile(config.server, zipFile, remotePath, function () {
                 let time = parseInt((new Date().getTime() - start) / 1000)
                 console.log(`上传完成，耗时 ${time}ms`)
-                // console.log('上传完成')
-                process.exit()
+                console.log('解压文件...')
+                let cmd = `unzip -o ${remotePath} -d ${config.uploadPath}`
+                console.log('执行 ' + cmd)
+                Shell(config.server, cmd, (data) => {
+                    console.log('解压完成')
+                    // console.log(data.toString())
+                    process.exit()
+                })
             })
+            // UploadDir(config.server, dbPath, config.uploadPath, function () {
+            //     let time = parseInt((new Date().getTime() - start) / 1000)
+            //     console.log(`上传完成，耗时 ${time}ms`)
+            //     // console.log('上传完成')
+            //     process.exit()
+            // })
         })
     } else {
-        process.exit()
+        // process.exit()
+        createServer(path.resolve(config.export.path, config.mysql.database))
     }
 }
 
