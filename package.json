@@ -4,11 +4,13 @@
     "project": "node src/project.js"
   },
   "dependencies": {
+    "archiver": "^2.1.1",
     "async": "^2.6.0",
     "js-beautify": "^1.7.5",
     "lodash": "^4.17.5",
     "officegen": "^0.4.5",
     "pdfkit": "^0.8.3",
-    "phantom-html-to-pdf": "^0.5.5"
+    "phantom-html-to-pdf": "^0.5.5",
+    "ssh2": "^0.6.0"
   }
 }

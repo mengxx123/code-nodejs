@@ -39,9 +39,11 @@ function genPdf(tables, dbPath) {
             // to save the pdf to a file (like in this example) or to
             // respond an http request.
             pdf.stream.pipe(output);
+
+            resolve()
         });
 
-        resolve()
+
     })
 }
 

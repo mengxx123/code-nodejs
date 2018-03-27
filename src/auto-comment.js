@@ -52,6 +52,7 @@ const dictionary = {
     'customer': '客户',
     'code': '编号',
     'attribute': '属性',
+    'total': '总',
 }
 
 function autoComment(field) {

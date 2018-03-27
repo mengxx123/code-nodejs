@@ -20,3 +20,10 @@
 
 使用 MySQL Workbench 等工具导出某个数据库的 sql 文件，重命名为 `db.sql`，置于 `src` 目录下。
 
+## 文档
+
+可以在 `src/config/index` 修改配置，
+
+database.version：用于数据库版本管理，注意不是 MySQL 的版本
+
+在公司或者自己机器上建个Web服务器，大家都可以随时随地的查看，也可另存备份到本地

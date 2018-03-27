@@ -4,13 +4,15 @@ const generateCode = require('./sqlUtil')
 const mysql = require('mysql2/promise')
 const config = require('./config')
 const autoComment = require('./auto-comment')
-const marked = require('marked')
-const template = require('art-template')
 const genJsCode = require('./js/js')
 const genJavaCode = require('./java')
 const genDoc = require('./office/word')
 const genExcel = require('./office/excel')
 const genPdf = require('./office/pdf')
+const exportHtml = require('./html')
+const mkdirs = require('./util/file')
+const {Connect, UploadDir} = require('./util/upload')
+const archiver = require('archiver')
 
 let connection
 let pool
@@ -143,18 +145,9 @@ async function main() {
         }
     }
     // 导出
-    let distPath = path.resolve(config.export.path)
-    if (!fs.existsSync(distPath)) {
-        fs.mkdirSync(distPath)
-    }
-    let dbPath = path.resolve(config.export.path, config.mysql.database)
-    if (!fs.existsSync(dbPath)) {
-        fs.mkdirSync(dbPath)
-    }
+    let dbPath = path.resolve(config.export.path, config.mysql.database, config.database.version)
     let htmlPath = path.resolve(dbPath, 'html')
-    if (!fs.existsSync(htmlPath)) {
-        fs.mkdirSync(htmlPath)
-    }
+    mkdirs(htmlPath)
 
     function copyfile(src,dir) {
         fs.writeFileSync(dir,fs.readFileSync(src));
@@ -167,22 +160,11 @@ async function main() {
     fs.writeFileSync(path.resolve(dbPath, 'table.json'), JSON.stringify(tables, null, config.indent))
     let code = 'let tables = ' + JSON.stringify(tables, null, config.indent) + '\n'
     fs.writeFileSync(path.resolve(dbPath, 'table.js'), code)
-    // 导出 Markdown
-    let markdown = exportMarkdown(tables, dbPath)
-    // 导出 HTML
-    let htmlContent = marked(markdown)
-    let source = fs.readFileSync(__dirname + '/tpl-user.art', 'utf-8')
-    html = template.render(source, {
-        title: '数据库文档',
-        content: htmlContent
-    }, {
-        escape: false
-    })
-    // console.log(html)
-    fs.writeFileSync(path.resolve(dbPath, 'html/index.html'), html)
-    // TODO 导出 PDF
 
-    // 生成 Java
+    // 导出
+    console.info('导出文档...')
+    exportMarkdown(tables, dbPath)
+    exportHtml(tables, dbPath)
     genJsCode(tables, dbPath)
     genJavaCode(tables, dbPath)
     exportJava(tables, dbPath)
@@ -190,7 +172,41 @@ async function main() {
     await genExcel(tables, dbPath)
     await genPdf(tables, dbPath)
     console.info('导出成功')
-    // process.exit() // 这里有坑，确保执行到这里时文档已经生成完成
+    if (config.upload) {
+        console.log('压缩文档...')
+        let zipFile = path.resolve(dbPath, '../example.zip')
+        console.log(zipFile)
+        var output = fs.createWriteStream(zipFile)
+        var archive = archiver('zip', {
+            zlib: { level: 9 } // Sets the compression level.
+        });
+        output.on('close', function() {
+            console.log(archive.pointer() + ' total bytes');
+            console.log('archiver has been finalized and the output file descriptor has closed.');
+        });
+        output.on('end', function() {
+            console.log('Data has been drained');
+        });
+        archive.pipe(output);
+        archive.directory(dbPath, 'test');
+        archive.finalize();
+        console.log('文档压缩完成...')
+        return
+        console.log('链接服务器...')
+        Connect(config.server, function () {
+            console.log('链接服务器成功')
+            console.log('准备上传...')
+            let start = new Date().getTime()
+            UploadDir(config.server, dbPath, config.uploadPath, function () {
+                let time = parseInt((new Date().getTime() - start) / 1000)
+                console.log(`上传完成，耗时 ${time}ms`)
+                // console.log('上传完成')
+                process.exit()
+            })
+        })
+    } else {
+        process.exit()
+    }
 }
 
 main()

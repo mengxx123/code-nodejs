@@ -65,3 +65,8 @@ table .column-default {
         z-index: 1000;
     }
 }
+.index {
+    display: inline-block;
+    min-width: 30px;
+    color: #ccc;
+}
