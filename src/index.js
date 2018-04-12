@@ -10,10 +10,10 @@ const genDoc = require('./office/word')
 const genExcel = require('./office/excel')
 const genPdf = require('./office/pdf')
 const exportHtml = require('./html')
-const mkdirs = require('./util/file')
 const {Connect, UploadDir, UploadFile, Shell} = require('./util/upload')
 const archiver = require('archiver')
 const createServer = require('./server')
+const mkdirs = require('./util/file')
 
 let connection
 let pool
@@ -146,17 +146,8 @@ async function main() {
         }
     }
     // 导出
-    let dbPath = path.resolve(config.export.path, config.mysql.database, config.database.version)
-    let htmlPath = path.resolve(dbPath, 'html')
-    mkdirs(htmlPath)
-
-    function copyfile(src,dir) {
-        fs.writeFileSync(dir,fs.readFileSync(src));
-    }
-
-    let staticPath = path.join(config.path.root, 'static')
-    copyfile(path.join(staticPath, 'yunser-ui.css'), path.join(htmlPath, 'yunser-ui.css'))
-    copyfile(path.join(staticPath, 'index.css'), path.join(htmlPath, 'index.css'))
+    let dbPath = path.resolve(config.export.path, config.project.name, 'database', config.database.version)
+    mkdirs(dbPath)
 
     fs.writeFileSync(path.resolve(dbPath, 'table.json'), JSON.stringify(tables, null, config.indent))
     let code = 'let tables = ' + JSON.stringify(tables, null, config.indent) + '\n'
@@ -221,7 +212,9 @@ async function main() {
         })
     } else {
         // process.exit()
-        createServer(path.resolve(config.export.path, config.mysql.database))
+        if (config.localServer) {
+            createServer(path.resolve(config.export.path, config.project.name, 'database'))
+        }
     }
 }
 

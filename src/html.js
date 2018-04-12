@@ -2,6 +2,7 @@ const marked = require('marked')
 const fs = require('fs')
 const template = require('art-template')
 const path = require('path')
+const mkdirs = require('./util/file')
 
 function exportHtml(tables, dbPath, config) {
     let markdown = `<h1>数据库文档<small class="version">${config.database.version}</small></h1>\n`
@@ -39,12 +40,23 @@ function exportHtml(tables, dbPath, config) {
     let source = fs.readFileSync(__dirname + '/tpl-user.art', 'utf-8')
     html = template.render(source, {
         title: '数据库文档',
-        content: htmlContent
+        content: htmlContent,
+        version: config.database.version
     }, {
         escape: false
     })
     // console.log(html)
     fs.writeFileSync(path.resolve(dbPath, 'index.html'), html)
+    let staticPath = path.join(config.path.root, 'static')
+    let htmlPath = path.resolve(dbPath, 'html')
+    console.log('htmlPath', htmlPath)
+    mkdirs(htmlPath)
+
+    function copyfile(src,dir) {
+        fs.writeFileSync(dir,fs.readFileSync(src));
+    }
+    copyfile(path.join(staticPath, 'yunser-ui.css'), path.join(htmlPath, 'yunser-ui.css'))
+    copyfile(path.join(staticPath, 'index.css'), path.join(htmlPath, 'index.css'))
 }
 
 module.exports = exportHtml
