@@ -3,7 +3,7 @@ const path = require('path')
 const generateCode = require('./sqlUtil')
 const mysql = require('mysql2/promise')
 const config = require('./config')
-const autoComment = require('./auto-comment')
+const util = require('./util')
 const genJsCode = require('./js/js')
 const genJavaCode = require('./java')
 const genDoc = require('./office/word')
@@ -25,7 +25,7 @@ async function dealTable(tableName) {
     for (let row of rows) {
         let item = {
             columnName: row.Field,
-            notNull: row.Null === 'YES',
+            notNull: row.Null !== 'YES',
             dataType: row.Type,
             default: row.Default,
             comment: row.Comment,
@@ -115,25 +115,23 @@ async function main() {
         tables = await importFromSql()
     }
 
-    // 处理数据，便于展示
+    // 处理数据，输出标准格式
     for (let table of tables) {
         // remove table prefix
         if (config.database.tablePrefix && !config.database.showTablePrefix) {
             table.name = table.name.replace(config.database.tablePrefix, '')
         }
+        table.nameZh = util.getNameFromComment(table.comment, table.name)
+        table.simpleComment = util.getCommentFromComment(table.comment)
+        if (table.comment.includes('!deprecated')) {
+            table.deprecated = true
+        }
         for (let row of table.rows) {
-            if (!row.comment) {
-                row.comment = autoComment(row.columnName) || ''
+            row.columnNameZh =  util.getNameFromComment(row.comment, row.columnName)
+            row.simpleComment = util.getCommentFromComment(row.comment)
+            if (row.comment.includes('!deprecated')) {
+                row.deprecated = true
             }
-            let zh = row.comment
-            let note = ''
-            let match = row.comment.match(/[，。（,]/)
-            if (/[，。（,]/.test(row.comment)) {
-                zh = row.comment.substring(0, match.index)
-                note = row.comment.substring(match.index + 1, row.comment.length)
-            }
-            row.columnNameZh = zh
-            row.comment = note
             // remove field prefix
             if (config.database.fieldPrefix && !config.database.showFieldPrefix) {
                 row.columnName = row.columnName.replace(config.database.fieldPrefix, '')
@@ -143,8 +141,15 @@ async function main() {
                 row.comment += row.dataType
                 row.dataType = 'enum'
             }
+            let values = util.getValues(row.comment)
+            if (values) {
+                row.values = values
+            }
         }
     }
+
+    console.log('处理', tables[0])
+
     // 导出
     let dbPath = path.resolve(config.export.path, config.project.name, 'database', config.database.version)
     mkdirs(dbPath)

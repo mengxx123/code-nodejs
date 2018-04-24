@@ -21,6 +21,7 @@ const dictionary = {
     'email': '邮箱',
     'type': '类型',
     'gender': '性别',
+    'sex': '性别',
     'birthday': '生日',
     'fax': '传真',
     'postal_code': '邮编',
@@ -53,6 +54,18 @@ const dictionary = {
     'code': '编号',
     'attribute': '属性',
     'total': '总',
+    'parent': '父',
+    'child': '子',
+    'content': '内容',
+    'check': '审核',
+    'state': '状态',
+    'status': '状态',
+    'opening_balance': '期初余额',
+    'ending_balance': '期末余额',
+    'money': '金额',
+    'title': '标题',
+    'read': '阅读',
+    'business_user_id': '业务员 ID',
 }
 
 function autoComment(field) {
@@ -91,4 +104,7 @@ function autoComment(field) {
     return null
 }
 
-module.exports = autoComment
+module.exports = {
+    dictionary,
+    autoComment
+}
